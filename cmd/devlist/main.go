@@ -14,10 +14,6 @@ import (
 	"github.com/gentlemanautomaton/windevice/strmatch"
 )
 
-var knownClasses = map[string]string{
-	"net": "{CAC88484-7515-4C03-82E6-71A87ABAC361}",
-}
-
 func main() {
 	var (
 		className  string
