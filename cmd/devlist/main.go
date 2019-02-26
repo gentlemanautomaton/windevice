@@ -48,7 +48,7 @@ func main() {
 	if className != "" {
 		class, err := windevice.NewNamedClass(className)
 		if err != nil {
-			fmt.Printf("Unable to retrieve named class \"\": %v\n", className)
+			fmt.Printf("Unable to retrieve named class \"%s\": %v\n", className, err)
 			os.Exit(1)
 		}
 		if len(class.Members) == 1 {
