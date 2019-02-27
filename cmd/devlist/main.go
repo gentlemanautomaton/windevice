@@ -99,27 +99,47 @@ func printDetail(device windevice.Device, index int) {
 	if class, _ := device.Class(); class != "" {
 		fmt.Printf("      Class: %s\n", class)
 	}
+	if guid, _ := device.ClassGUID(); guid != "" {
+		fmt.Printf("      Class GUID: %s\n", guid)
+	}
 	if enum, _ := device.EnumeratorName(); enum != "" {
 		fmt.Printf("      Enumerator: %s\n", enum)
 	}
-	if location, _ := device.LocationInformation(); err == nil && location != "" {
+	if location, _ := device.LocationInformation(); location != "" {
 		fmt.Printf("      Location: %s\n", location)
 	}
-	if mfg, _ := device.Manufacturer(); err == nil && mfg != "" {
+	if mfg, _ := device.Manufacturer(); mfg != "" {
 		fmt.Printf("      Manufacturer: %s\n", mfg)
 	}
-	if phys, _ := device.PhysicalDeviceObjectName(); err == nil && phys != "" {
+	if phys, _ := device.PhysicalDeviceObjectName(); phys != "" {
 		fmt.Printf("      Physical Device Object: %s\n", phys)
 	}
-	if driver, _ := device.Driver(); err == nil && driver != "" {
+	if driver, _ := device.Driver(); driver != "" {
 		fmt.Printf("      Driver: %s\n", driver)
 	}
-	if service, _ := device.Service(); err == nil && service != "" {
+	if service, _ := device.Service(); service != "" {
 		fmt.Printf("      Service: %s\n", service)
 	}
-	if ids, err := device.HardwareID(); err == nil && len(ids) > 0 {
+	if ids, _ := device.HardwareID(); len(ids) > 0 {
 		for _, id := range ids {
 			fmt.Printf("      Hardware ID: %s\n", id)
 		}
+	}
+	if ids, _ := device.CompatibleID(); len(ids) > 0 {
+		for _, id := range ids {
+			fmt.Printf("      Compatible ID: %s\n", id)
+		}
+	}
+	if flags, _ := device.ConfigFlags(); flags != 0 {
+		fmt.Printf("      Flags: %x\n", flags)
+	}
+	if devType, err := device.DevType(); err == nil {
+		fmt.Printf("      Device Type: %d\n", devType)
+	}
+	if characteristics, _ := device.Characteristics(); characteristics != 0 {
+		fmt.Printf("      Characteristics: %x\n", characteristics)
+	}
+	if state, err := device.InstallState(); err == nil {
+		fmt.Printf("      State: %s\n", state)
 	}
 }
