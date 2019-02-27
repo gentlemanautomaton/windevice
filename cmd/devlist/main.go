@@ -58,7 +58,7 @@ func main() {
 		selectors = append(selectors, devselect.ID(strmatch.EqualFold(id)))
 	}
 	if name != "" {
-		matcher := strmatch.Contains(name)
+		matcher := strmatch.ContainsInsensitive(name)
 		selectors = append(selectors, devselect.Any(devselect.Description(matcher), devselect.FriendlyName(matcher)))
 	}
 
