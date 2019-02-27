@@ -33,15 +33,15 @@ func (q Query) Each(action Actor) error {
 		classPtr = &q.Class
 	}
 
-	devices, err := setupapi.SetupDiGetClassDevsEx(classPtr, q.Enumerator, q.Flags, 0, q.Machine)
+	devices, err := setupapi.GetClassDevsEx(classPtr, q.Enumerator, q.Flags, 0, q.Machine)
 	if err != nil {
 		return err
 	}
-	defer setupapi.SetupDiDestroyDeviceInfoList(devices)
+	defer setupapi.DestroyDeviceInfoList(devices)
 
 	i := uint32(0)
 	for {
-		device, err := setupapi.SetupDiEnumDeviceInfo(devices, i)
+		device, err := setupapi.EnumDeviceInfo(devices, i)
 		switch err {
 		case nil:
 		case io.EOF:

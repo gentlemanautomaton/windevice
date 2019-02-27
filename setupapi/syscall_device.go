@@ -15,10 +15,12 @@ var (
 	procSetupDiDestroyDeviceInfoList = modsetupapi.NewProc("SetupDiDestroyDeviceInfoList")
 )
 
-// SetupDiGetClassDevsEx prepares a device information set.
+// GetClassDevsEx builds and returns a device information list that contains
+// devices matching the given parameters. It calls the SetupDiGetClassDevsEx
+// windows API function.
 //
 // https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdigetclassdevsexw
-func SetupDiGetClassDevsEx(guid *windows.GUID, enumerator string, flags uint32, hDevInfoSet syscall.Handle, machineName string) (handle syscall.Handle, err error) {
+func GetClassDevsEx(guid *windows.GUID, enumerator string, flags uint32, hDevInfoSet syscall.Handle, machineName string) (handle syscall.Handle, err error) {
 	var ep *uint16
 	if enumerator != "" {
 		ep, err = syscall.UTF16PtrFromString(enumerator)
@@ -62,10 +64,11 @@ func SetupDiGetClassDevsEx(guid *windows.GUID, enumerator string, flags uint32, 
 	return
 }
 
-// SetupDiCreateDeviceInfoList creates a device info list.
+// CreateDeviceInfoList creates an empty device information list. It calls the
+// SetupDiCreateDeviceInfoList windows API function.
 //
 // https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdicreatedeviceinfolist
-func SetupDiCreateDeviceInfoList(guid *windows.GUID) (handle syscall.Handle, err error) {
+func CreateDeviceInfoList(guid *windows.GUID) (handle syscall.Handle, err error) {
 	r0, _, e := syscall.Syscall(
 		procSetupDiCreateDeviceInfoList.Addr(),
 		2,
@@ -83,10 +86,11 @@ func SetupDiCreateDeviceInfoList(guid *windows.GUID) (handle syscall.Handle, err
 	return
 }
 
-// SetupDiDestroyDeviceInfoList destroys a device info list.
+// DestroyDeviceInfoList destroys a device information list. It calls the
+// SetupDiDestroyDeviceInfoList windows API function.
 //
 // https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdidestroydeviceinfolist
-func SetupDiDestroyDeviceInfoList(devices syscall.Handle) error {
+func DestroyDeviceInfoList(devices syscall.Handle) error {
 	r0, _, e := syscall.Syscall(
 		procSetupDiDestroyDeviceInfoList.Addr(),
 		1,
@@ -102,12 +106,13 @@ func SetupDiDestroyDeviceInfoList(devices syscall.Handle) error {
 	return nil
 }
 
-// SetupDiEnumDeviceInfo returns device information about a member of a device
-// information set. It returns io.EOF if there are not more members in the
-// set.
+// EnumDeviceInfo returns device information about a member of a device
+// information list. It calls the SetupDiEnumDeviceInfo windows API function.
+//
+// EnumDeviceInfo returns io.EOF when there are no more members in the list.
 //
 // https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdienumdeviceinfo
-func SetupDiEnumDeviceInfo(devices syscall.Handle, index uint32) (info DevInfoData, err error) {
+func EnumDeviceInfo(devices syscall.Handle, index uint32) (info DevInfoData, err error) {
 	const errNoMoreItems = 259
 
 	info.Size = uint32(unsafe.Sizeof(info))

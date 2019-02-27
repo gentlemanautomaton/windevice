@@ -12,11 +12,11 @@ var (
 	procSetupDiClassGuidsFromNameEx = modsetupapi.NewProc("SetupDiClassGuidsFromNameExW")
 )
 
-// SetupDiClassGuidsFromNameEx returns the list of GUIDs associated with
-// a class name.
+// ClassGuidsFromNameEx returns the list of GUIDs associated with a class
+// name. It calls the SetupDiClassGuidsFromNameEx windows API function.
 //
 // https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdiclassguidsfromnameexw
-func SetupDiClassGuidsFromNameEx(className, machine string) (guids []windows.GUID, err error) {
+func ClassGuidsFromNameEx(className, machine string) (guids []windows.GUID, err error) {
 	cp, err := syscall.UTF16PtrFromString(className)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func SetupDiClassGuidsFromNameEx(className, machine string) (guids []windows.GUI
 	const rounds = 3
 	for i := 0; i < rounds; i++ {
 		var length uint32
-		length, err = setupDiClassGuidsFromNameEx(cp, mp, guids)
+		length, err = classGuidsFromNameEx(cp, mp, guids)
 		if err == nil {
 			if length == 0 {
 				return nil, nil
@@ -53,7 +53,7 @@ func SetupDiClassGuidsFromNameEx(className, machine string) (guids []windows.GUI
 	return nil, syscall.ERROR_INSUFFICIENT_BUFFER
 }
 
-func setupDiClassGuidsFromNameEx(className, machine *uint16, buffer []windows.GUID) (reqSize uint32, err error) {
+func classGuidsFromNameEx(className, machine *uint16, buffer []windows.GUID) (reqSize uint32, err error) {
 	var gp *windows.GUID
 	if len(buffer) > 0 {
 		gp = &buffer[0]

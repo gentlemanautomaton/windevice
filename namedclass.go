@@ -13,7 +13,7 @@ type NamedClass struct {
 
 // NewNamedClass returns a NamedClass entry for the given class name.
 func NewNamedClass(name string) (NamedClass, error) {
-	members, err := setupapi.SetupDiClassGuidsFromNameEx(name, "")
+	members, err := setupapi.ClassGuidsFromNameEx(name, "")
 	if err != nil {
 		return NamedClass{}, err
 	}
