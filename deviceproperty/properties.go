@@ -13,7 +13,7 @@ const (
 	ClassGUID                = 8  // SPDRP_CLASSGUID
 	Driver                   = 9  // SPDRP_DRIVER
 	ConfigFlags              = 10 // SPDRP_CONFIGFLAGS
-	MFG                      = 11 // SPDRP_MFG
+	Manufacturer             = 11 // SPDRP_MFG
 	FriendlyName             = 12 // SPDRP_FRIENDLYNAME
 	LocationInformation      = 13 // SPDRP_LOCATION_INFORMATION
 	PhysicalDeviceObjectName = 14 // SPDRP_PHYSICAL_DEVICE_OBJECT_NAME

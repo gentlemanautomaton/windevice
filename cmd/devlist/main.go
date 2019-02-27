@@ -108,7 +108,7 @@ func printDetail(devices syscall.Handle, device setupapi.DevInfoData, index int)
 	if location, err := setupapi.GetDeviceRegistryString(devices, device, deviceproperty.LocationInformation); err == nil && location != "" {
 		fmt.Printf("      Location: %s\n", location)
 	}
-	if mfg, err := setupapi.GetDeviceRegistryString(devices, device, deviceproperty.MFG); err == nil && mfg != "" {
+	if mfg, err := setupapi.GetDeviceRegistryString(devices, device, deviceproperty.Manufacturer); err == nil && mfg != "" {
 		fmt.Printf("      Manufacturer: %s\n", mfg)
 	}
 	if phys, err := setupapi.GetDeviceRegistryString(devices, device, deviceproperty.PhysicalDeviceObjectName); err == nil && phys != "" {
