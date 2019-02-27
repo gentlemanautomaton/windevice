@@ -14,7 +14,7 @@ type Query struct {
 	Enumerator string
 	Flags      uint32
 	Machine    string // TODO: Consider removing this if it's not well supported
-	Selector   Selector
+	Selector   DeviceSelector
 }
 
 // Count returns the number of devices matching the query.
@@ -27,7 +27,7 @@ func (q Query) Count() (int, error) {
 }
 
 // Each performs an action on each device that matches the query.
-func (q Query) Each(action Actor) error {
+func (q Query) Each(action DeviceActor) error {
 	var classPtr *windows.GUID
 	if q.Class != zeroGUID {
 		classPtr = &q.Class
