@@ -1,6 +1,7 @@
 package setupapi
 
 import (
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
@@ -151,79 +152,60 @@ func SetupDiDestroyDeviceInfoList(devices syscall.Handle) error {
 	return nil
 }
 
-// GetDeviceRegistryString retrieves the requested property from the registry
-// and returns it as a string.
+// GetDeviceRegistryString retrieves a property from the registry as a string.
 func GetDeviceRegistryString(devices syscall.Handle, device DevInfoData, property uint32) (value string, err error) {
-	var (
-		b        [1024 * 2]byte
-		buffer   = b[:]
-		dataType uint32
-	)
-
-	// Make up to 3 attempts to get the property data.
-	const rounds = 3
-	for i := 0; i < rounds; i++ {
-		var length uint32
-		length, dataType, err = SetupDiGetDeviceRegistryProperty(devices, device, property, buffer)
-		if err == nil {
-			buffer = buffer[:length]
-			break
-		}
-		if err == syscall.ERROR_INSUFFICIENT_BUFFER && i < rounds {
-			buffer = make([]byte, length)
-		} else {
-			return "", err
-		}
-	}
-
+	var buffer [1024 * 2]byte
+	dataType, data, err := SetupDiGetDeviceRegistryProperty(devices, device, property, buffer[:])
 	if err != nil {
 		return "", err
 	}
 
 	switch dataType {
 	case syscall.REG_SZ, syscall.REG_EXPAND_SZ:
-		return utf16BytesToString(buffer), nil
+		return utf16BytesToString(data), nil
 	default:
 		return "", fmt.Errorf("expected REG_SZ registry type but received type %d", dataType)
 	}
 }
 
-// GetDeviceRegistryStrings retrieves the requested property from the registry
-// and returns it as a slice of strings.
+// GetDeviceRegistryStrings retrieves a property from the registry as a
+// slice of strings.
 func GetDeviceRegistryStrings(devices syscall.Handle, device DevInfoData, property uint32) (values []string, err error) {
-	var (
-		b        [1024 * 2]byte
-		buffer   = b[:]
-		dataType uint32
-	)
-
-	// Make up to 3 attempts to get the property data.
-	const rounds = 3
-	for i := 0; i < rounds; i++ {
-		var length uint32
-		length, dataType, err = SetupDiGetDeviceRegistryProperty(devices, device, property, buffer)
-		if err == nil {
-			buffer = buffer[:length]
-			break
-		}
-		if err == syscall.ERROR_INSUFFICIENT_BUFFER && i < rounds {
-			buffer = make([]byte, length)
-		} else {
-			return nil, err
-		}
-	}
-
+	var buffer [1024 * 2]byte
+	dataType, data, err := SetupDiGetDeviceRegistryProperty(devices, device, property, buffer[:])
 	if err != nil {
 		return nil, err
 	}
 
 	switch dataType {
 	case syscall.REG_SZ, syscall.REG_EXPAND_SZ:
-		return []string{utf16BytesToString(buffer)}, nil
+		return []string{utf16BytesToString(data)}, nil
 	case syscall.REG_MULTI_SZ:
-		return utf16BytesToSplitString(buffer), nil
+		return utf16BytesToSplitString(data), nil
 	default:
 		return nil, fmt.Errorf("expected REG_MULTI_SZ registry type but received type %d", dataType)
+	}
+}
+
+// GetDeviceRegistryUint32 retrieves a property from the registry as a uint32.
+func GetDeviceRegistryUint32(devices syscall.Handle, device DevInfoData, property uint32) (value uint32, err error) {
+	var buffer [4]byte
+	dataType, data, err := SetupDiGetDeviceRegistryProperty(devices, device, property, buffer[:])
+	if err != nil {
+		return 0, err
+	}
+
+	if len(data) != 4 {
+		return 0, fmt.Errorf("expected 4-byte DWORD but received %d bytes", len(data))
+	}
+
+	switch dataType {
+	case syscall.REG_DWORD_LITTLE_ENDIAN:
+		return binary.LittleEndian.Uint32(data), nil
+	case syscall.REG_DWORD_BIG_ENDIAN:
+		return binary.BigEndian.Uint32(data), nil
+	default:
+		return 0, fmt.Errorf("expected REG_DWORD registry type but received type %d", dataType)
 	}
 }
 
@@ -231,7 +213,26 @@ func GetDeviceRegistryStrings(devices syscall.Handle, device DevInfoData, proper
 // device information set.
 //
 // https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdigetdeviceregistrypropertyw
-func SetupDiGetDeviceRegistryProperty(devices syscall.Handle, device DevInfoData, property uint32, buffer []byte) (reqSize uint32, registryDataType uint32, err error) {
+func SetupDiGetDeviceRegistryProperty(devices syscall.Handle, device DevInfoData, property uint32, buffer []byte) (dataType uint32, data []byte, err error) {
+	// Make up to 3 attempts to get the property data.
+	const rounds = 3
+	for i := 0; i < rounds; i++ {
+		var length uint32
+		length, dataType, err = setupDiGetDeviceRegistryProperty(devices, device, property, buffer)
+		if err == nil {
+			data = buffer[:length]
+			break
+		}
+		if err == syscall.ERROR_INSUFFICIENT_BUFFER && i < rounds {
+			buffer = make([]byte, length)
+		} else {
+			return dataType, nil, err
+		}
+	}
+	return dataType, data, err
+}
+
+func setupDiGetDeviceRegistryProperty(devices syscall.Handle, device DevInfoData, property uint32, buffer []byte) (reqSize uint32, registryDataType uint32, err error) {
 	if len(buffer) == 0 {
 		return 0, 0, ErrEmptyBuffer
 	}
