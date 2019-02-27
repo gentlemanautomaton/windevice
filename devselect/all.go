@@ -1,16 +1,12 @@
 package devselect
 
-import (
-	"syscall"
-
-	"github.com/gentlemanautomaton/windevice/setupapi"
-)
+import "github.com/gentlemanautomaton/windevice"
 
 // All returns a selector that returns true when all selectors return true.
 func All(selectors ...Selector) Selector {
-	return func(devices syscall.Handle, device setupapi.DevInfoData) (bool, error) {
+	return func(device windevice.Device) (bool, error) {
 		for _, selector := range selectors {
-			ok, err := selector(devices, device)
+			ok, err := selector(device)
 			if err != nil {
 				return false, err
 			}

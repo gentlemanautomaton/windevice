@@ -4,13 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"syscall"
 
 	"github.com/gentlemanautomaton/windevice"
 	"github.com/gentlemanautomaton/windevice/deviceclass"
-	"github.com/gentlemanautomaton/windevice/deviceproperty"
 	"github.com/gentlemanautomaton/windevice/devselect"
-	"github.com/gentlemanautomaton/windevice/setupapi"
 	"github.com/gentlemanautomaton/windevice/strmatch"
 )
 
@@ -70,57 +67,57 @@ func main() {
 	}
 
 	var index int
-	q.Each(func(devices syscall.Handle, device setupapi.DevInfoData) {
+	q.Each(func(device windevice.Device) {
 		if detail {
-			printDetail(devices, device, index)
+			printDetail(device, index)
 		} else {
-			printBasic(devices, device, index)
+			printBasic(device, index)
 		}
 		index++
 	})
 }
 
-func printBasic(devices syscall.Handle, device setupapi.DevInfoData, index int) {
-	if desc, err := setupapi.GetDeviceRegistryString(devices, device, deviceproperty.Description); err != nil {
+func printBasic(device windevice.Device, index int) {
+	if desc, err := device.Description(); err != nil {
 		fmt.Printf(" %3d: Error: %v\n", index, err)
 	} else {
 		fmt.Printf(" %3d: %s\n", index, desc)
 	}
 }
 
-func printDetail(devices syscall.Handle, device setupapi.DevInfoData, index int) {
-	desc, err := setupapi.GetDeviceRegistryString(devices, device, deviceproperty.Description)
+func printDetail(device windevice.Device, index int) {
+	desc, err := device.Description()
 	if err != nil {
 		fmt.Printf(" %3d: Error: %v\n", index, err)
 		return
 	}
 	fmt.Printf(" %3d: Description: %s\n", index, desc)
 
-	if fname, err := setupapi.GetDeviceRegistryString(devices, device, deviceproperty.FriendlyName); err == nil && fname != "" {
-		fmt.Printf("      Friendly Name: %s\n", fname)
+	if name, _ := device.FriendlyName(); name != "" {
+		fmt.Printf("      Friendly Name: %s\n", name)
 	}
-	if class, err := setupapi.GetDeviceRegistryString(devices, device, deviceproperty.Class); err == nil && class != "" {
+	if class, _ := device.Class(); class != "" {
 		fmt.Printf("      Class: %s\n", class)
 	}
-	if enum, err := setupapi.GetDeviceRegistryString(devices, device, deviceproperty.EnumeratorName); err == nil && enum != "" {
+	if enum, _ := device.EnumeratorName(); enum != "" {
 		fmt.Printf("      Enumerator: %s\n", enum)
 	}
-	if location, err := setupapi.GetDeviceRegistryString(devices, device, deviceproperty.LocationInformation); err == nil && location != "" {
+	if location, _ := device.LocationInformation(); err == nil && location != "" {
 		fmt.Printf("      Location: %s\n", location)
 	}
-	if mfg, err := setupapi.GetDeviceRegistryString(devices, device, deviceproperty.Manufacturer); err == nil && mfg != "" {
+	if mfg, _ := device.Manufacturer(); err == nil && mfg != "" {
 		fmt.Printf("      Manufacturer: %s\n", mfg)
 	}
-	if phys, err := setupapi.GetDeviceRegistryString(devices, device, deviceproperty.PhysicalDeviceObjectName); err == nil && phys != "" {
+	if phys, _ := device.PhysicalDeviceObjectName(); err == nil && phys != "" {
 		fmt.Printf("      Physical Device Object: %s\n", phys)
 	}
-	if driver, err := setupapi.GetDeviceRegistryString(devices, device, deviceproperty.Driver); err == nil && driver != "" {
+	if driver, _ := device.Driver(); err == nil && driver != "" {
 		fmt.Printf("      Driver: %s\n", driver)
 	}
-	if service, err := setupapi.GetDeviceRegistryString(devices, device, deviceproperty.Service); err == nil && service != "" {
+	if service, _ := device.Service(); err == nil && service != "" {
 		fmt.Printf("      Service: %s\n", service)
 	}
-	if ids, err := setupapi.GetDeviceRegistryStrings(devices, device, deviceproperty.HardwareID); err == nil && len(ids) > 0 {
+	if ids, err := device.HardwareID(); err == nil && len(ids) > 0 {
 		for _, id := range ids {
 			fmt.Printf("      Hardware ID: %s\n", id)
 		}

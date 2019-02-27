@@ -2,7 +2,6 @@ package windevice
 
 import (
 	"io"
-	"syscall"
 
 	"github.com/gentlemanautomaton/windevice/setupapi"
 	"golang.org/x/sys/windows"
@@ -21,7 +20,7 @@ type Query struct {
 // Count returns the number of devices matching the query.
 func (q Query) Count() (int, error) {
 	var total int
-	err := q.Each(func(devices syscall.Handle, device setupapi.DevInfoData) {
+	err := q.Each(func(Device) {
 		total++
 	})
 	return total, err
@@ -53,8 +52,13 @@ func (q Query) Each(action Actor) error {
 
 		i++
 
+		d := Device{
+			list:  devices,
+			entry: device,
+		}
+
 		if q.Selector != nil {
-			matched, err := q.Selector.Select(devices, device)
+			matched, err := q.Selector.Select(d)
 			if err != nil {
 				return err
 			}
@@ -63,6 +67,6 @@ func (q Query) Each(action Actor) error {
 			}
 		}
 
-		action(devices, device)
+		action(d)
 	}
 }
