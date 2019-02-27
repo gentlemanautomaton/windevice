@@ -19,9 +19,14 @@ func (device Device) Sys() (list syscall.Handle, entry setupapi.DevInfoData) {
 	return device.list, device.entry
 }
 
-// HardwareID returns the set of hardware IDs the device.
+// HardwareID returns the set of hardware IDs associated with the device.
 func (device Device) HardwareID() ([]string, error) {
 	return setupapi.GetDeviceRegistryStrings(device.list, device.entry, deviceproperty.HardwareID)
+}
+
+// CompatibleID returns the set of compatible IDs associated with the device.
+func (device Device) CompatibleID() ([]string, error) {
+	return setupapi.GetDeviceRegistryStrings(device.list, device.entry, deviceproperty.CompatibleID)
 }
 
 // Description returns the description of the device.

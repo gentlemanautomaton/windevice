@@ -1,10 +1,12 @@
 package deviceproperty
 
 // Windows device property codes.
+//
+// https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdigetdeviceregistrypropertyw
 const (
 	Description              = 0  // SPDRP_DEVICEDESC
 	HardwareID               = 1  // SPDRP_HARDWAREID
-	CompatibleIDs            = 2  // SPDRP_COMPATIBLEIDS
+	CompatibleID             = 2  // SPDRP_COMPATIBLEIDS
 	_                        = 3  // SPDRP_UNUSED0
 	Service                  = 4  // SPDRP_SERVICE
 	_                        = 5  // SPDRP_UNUSED1
