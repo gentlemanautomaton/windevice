@@ -8,7 +8,6 @@ import (
 )
 
 var (
-	procSetupDiGetClassDevsExW      = modsetupapi.NewProc("SetupDiGetClassDevsExW")
 	procSetupDiClassGuidsFromNameEx = modsetupapi.NewProc("SetupDiClassGuidsFromNameExW")
 )
 

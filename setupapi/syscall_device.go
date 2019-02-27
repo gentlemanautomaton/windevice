@@ -10,9 +10,10 @@ import (
 )
 
 var (
-	procSetupDiEnumDeviceInfo        = modsetupapi.NewProc("SetupDiEnumDeviceInfo")
+	procSetupDiGetClassDevsExW       = modsetupapi.NewProc("SetupDiGetClassDevsExW")
 	procSetupDiCreateDeviceInfoList  = modsetupapi.NewProc("SetupDiCreateDeviceInfoList")
 	procSetupDiDestroyDeviceInfoList = modsetupapi.NewProc("SetupDiDestroyDeviceInfoList")
+	procSetupDiEnumDeviceInfo        = modsetupapi.NewProc("SetupDiEnumDeviceInfo")
 )
 
 // GetClassDevsEx builds and returns a device information list that contains
@@ -106,8 +107,8 @@ func DestroyDeviceInfoList(devices syscall.Handle) error {
 	return nil
 }
 
-// EnumDeviceInfo returns device information about a member of a device
-// information list. It calls the SetupDiEnumDeviceInfo windows API function.
+// EnumDeviceInfo returns information about a device in a device information
+// list. It calls the SetupDiEnumDeviceInfo windows API function.
 //
 // EnumDeviceInfo returns io.EOF when there are no more members in the list.
 //
