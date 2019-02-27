@@ -4,7 +4,7 @@ import "fmt"
 
 // Windows device installation states.
 //
-// hhttps://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/content/wdm/ne-wdm-_device_install_state
+// https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/content/wdm/ne-wdm-_device_install_state
 const (
 	Installed      = 0 // InstallStateInstalled
 	NeedsReinstall = 1 // InstallStateNeedsReinstall
