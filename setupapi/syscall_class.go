@@ -4,7 +4,6 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/gentlemanautomaton/windevice/deviceclass"
 	"golang.org/x/sys/windows"
 )
 
@@ -13,51 +12,45 @@ var (
 	procSetupDiClassGuidsFromNameEx = modsetupapi.NewProc("SetupDiClassGuidsFromNameExW")
 )
 
-// SetupDiGetClassDevsEx prepares a device information set.
+// SetupDiClassGuidsFromNameEx returns the list of GUIDs associated with
+// a class name.
 //
-// https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdigetclassdevsexw
-func SetupDiGetClassDevsEx(guid *windows.GUID, enumerator string, flags uint32, hDevInfoSet syscall.Handle, machineName string) (handle syscall.Handle, err error) {
-	var ep *uint16
-	if enumerator != "" {
-		ep, err = syscall.UTF16PtrFromString(enumerator)
+// https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdiclassguidsfromnameexw
+func SetupDiClassGuidsFromNameEx(className, machine string) (guids []windows.GUID, err error) {
+	cp, err := syscall.UTF16PtrFromString(className)
+	if err != nil {
+		return nil, err
+	}
+
+	var mp *uint16
+	if machine != "" {
+		mp, err = syscall.UTF16PtrFromString(machine)
 		if err != nil {
-			return syscall.InvalidHandle, err
+			return nil, err
 		}
 	}
 
-	var mnp *uint16
-	if machineName != "" {
-		mnp, err = syscall.UTF16PtrFromString(machineName)
-		if err != nil {
-			return syscall.InvalidHandle, err
+	guids = make([]windows.GUID, 1)
+
+	// Make up to 3 attempts to get the class data.
+	const rounds = 3
+	for i := 0; i < rounds; i++ {
+		var length uint32
+		length, err = setupDiClassGuidsFromNameEx(cp, mp, guids)
+		if err == nil {
+			if length == 0 {
+				return nil, nil
+			}
+			return guids, nil
 		}
-	}
-
-	if guid == nil {
-		flags |= deviceclass.AllClasses
-	}
-
-	r0, _, e := syscall.Syscall9(
-		procSetupDiGetClassDevsExW.Addr(),
-		7,
-		uintptr(unsafe.Pointer(guid)),
-		uintptr(unsafe.Pointer(ep)),
-		0, // hwndParent
-		uintptr(flags),
-		uintptr(hDevInfoSet),
-		uintptr(unsafe.Pointer(mnp)),
-		0,
-		0,
-		0)
-	handle = syscall.Handle(r0)
-	if handle == syscall.InvalidHandle {
-		if e != 0 {
-			err = syscall.Errno(e)
+		if err == syscall.ERROR_INSUFFICIENT_BUFFER && i < rounds {
+			guids = make([]windows.GUID, length)
 		} else {
-			err = syscall.EINVAL
+			return nil, err
 		}
 	}
-	return
+
+	return nil, syscall.ERROR_INSUFFICIENT_BUFFER
 }
 
 func setupDiClassGuidsFromNameEx(className, machine *uint16, buffer []windows.GUID) (reqSize uint32, err error) {
