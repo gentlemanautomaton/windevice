@@ -8,6 +8,10 @@ import (
 )
 
 // Device provides access to Windows device information while executing a query.
+// It can be copied by value.
+//
+// Device stores a system handle internally and shouldn't be used outside of a
+// query callback.
 type Device struct {
 	list  syscall.Handle
 	entry setupapi.DevInfoData
