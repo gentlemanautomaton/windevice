@@ -2,7 +2,7 @@ package setupapi
 
 import "golang.org/x/sys/windows"
 
-// DevInfoData holds device information data.
+// DevInfoData holds device information.
 //
 // https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/ns-setupapi-sp_devinfo_data
 type DevInfoData struct {
