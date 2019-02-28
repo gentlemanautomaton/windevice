@@ -4,6 +4,8 @@ import (
 	"syscall"
 
 	"github.com/gentlemanautomaton/windevice/deviceproperty"
+	"github.com/gentlemanautomaton/windevice/diflagex"
+	"github.com/gentlemanautomaton/windevice/drivertype"
 	"github.com/gentlemanautomaton/windevice/installstate"
 	"github.com/gentlemanautomaton/windevice/setupapi"
 )
@@ -21,6 +23,29 @@ type Device struct {
 // Sys returns low-level information about the device.
 func (device Device) Sys() (devices syscall.Handle, data setupapi.DevInfoData) {
 	return device.devices, device.data
+}
+
+// Drivers returns a driver set that contains drivers affiliated with the
+// device.
+func (device Device) Drivers(q DriverQuery) DriverSet {
+	return DriverSet{
+		devices: device.devices,
+		device:  device.data, // TODO: Clone the data first?
+		query:   q,
+	}
+}
+
+// InstalledDriver returns a driver set that contains the device's currently
+// installed driver.
+func (device Device) InstalledDriver() DriverSet {
+	return DriverSet{
+		devices: device.devices,
+		device:  device.data, // TODO: Clone the data first?
+		query: DriverQuery{
+			Type:    drivertype.ClassDriver,
+			FlagsEx: diflagex.InstalledDriver | diflagex.AllowExcludedDrivers,
+		},
+	}
 }
 
 // Description returns the description of the device.

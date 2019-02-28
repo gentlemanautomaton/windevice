@@ -114,6 +114,34 @@ func printDetail(device windevice.Device, index int) {
 	if phys, _ := device.PhysicalDeviceObjectName(); phys != "" {
 		fmt.Printf("      Physical Device Object: %s\n", phys)
 	}
+	{
+		drivers := device.InstalledDriver()
+
+		count, err := drivers.Count()
+		if err != nil {
+			fmt.Printf("      Driver Enumeration Failed: %v\n", err)
+		}
+
+		switch count {
+		case 0:
+			fmt.Printf("      Drivers: None\n")
+		case 1:
+			drivers.Each(func(driver windevice.Driver) {
+				fmt.Printf("      Driver: %s, Version: %s, Released: %s\n", driver.Description(), driver.Version(), driver.Date())
+			})
+		default:
+			fmt.Printf("      Drivers:\n")
+			driverIndex := 0
+			drivers.Each(func(driver windevice.Driver) {
+				fmt.Printf("        %2d: Description: %s\n", driverIndex, driver.Description())
+				fmt.Printf("            Manufacturer: %s\n", driver.ManufacturerName())
+				fmt.Printf("            Provider: %s\n", driver.ProviderName())
+				fmt.Printf("            Date: %s\n", driver.Date())
+				fmt.Printf("            Version: %s\n", driver.Version())
+				driverIndex++
+			})
+		}
+	}
 	if service, _ := device.Service(); service != "" {
 		fmt.Printf("      Service: %s\n", service)
 	}
