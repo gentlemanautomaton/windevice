@@ -53,8 +53,8 @@ func (q Query) Each(action DeviceActor) error {
 		i++
 
 		d := Device{
-			list:  devices,
-			entry: device,
+			devices: devices,
+			data:    device,
 		}
 
 		if q.Selector != nil {

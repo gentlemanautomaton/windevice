@@ -14,94 +14,93 @@ import (
 // Device stores a system handle internally and shouldn't be used outside of a
 // query callback.
 type Device struct {
-	list  syscall.Handle
-	entry setupapi.DevInfoData
+	devices syscall.Handle
+	data    setupapi.DevInfoData
 }
 
-// Sys returns the low-level device list handle and information data for the
-// device.
-func (device Device) Sys() (list syscall.Handle, entry setupapi.DevInfoData) {
-	return device.list, device.entry
+// Sys returns low-level information about the device.
+func (device Device) Sys() (devices syscall.Handle, data setupapi.DevInfoData) {
+	return device.devices, device.data
 }
 
 // Description returns the description of the device.
 func (device Device) Description() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.list, device.entry, deviceproperty.Description)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.Description)
 }
 
 // HardwareID returns the set of hardware IDs associated with the device.
 func (device Device) HardwareID() ([]string, error) {
-	return setupapi.GetDeviceRegistryStrings(device.list, device.entry, deviceproperty.HardwareID)
+	return setupapi.GetDeviceRegistryStrings(device.devices, device.data, deviceproperty.HardwareID)
 }
 
 // CompatibleID returns the set of compatible IDs associated with the device.
 func (device Device) CompatibleID() ([]string, error) {
-	return setupapi.GetDeviceRegistryStrings(device.list, device.entry, deviceproperty.CompatibleID)
+	return setupapi.GetDeviceRegistryStrings(device.devices, device.data, deviceproperty.CompatibleID)
 }
 
 // Service returns the service for the device.
 func (device Device) Service() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.list, device.entry, deviceproperty.Service)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.Service)
 }
 
 // Class returns the class name of the device.
 func (device Device) Class() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.list, device.entry, deviceproperty.Class)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.Class)
 }
 
 // ClassGUID returns a string representation of the globally unique identifier
 // of the device's class.
 func (device Device) ClassGUID() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.list, device.entry, deviceproperty.ClassGUID)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.ClassGUID)
 }
 
 // ConfigFlags returns the configuration flags for the device.
 func (device Device) ConfigFlags() (uint32, error) {
-	return setupapi.GetDeviceRegistryUint32(device.list, device.entry, deviceproperty.ConfigFlags)
+	return setupapi.GetDeviceRegistryUint32(device.devices, device.data, deviceproperty.ConfigFlags)
 }
 
 // Driver returns the driver for the device.
 func (device Device) Driver() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.list, device.entry, deviceproperty.Driver)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.Driver)
 }
 
 // Manufacturer returns the manufacturer of the device.
 func (device Device) Manufacturer() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.list, device.entry, deviceproperty.Manufacturer)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.Manufacturer)
 }
 
 // FriendlyName returns the friendly name of the device.
 func (device Device) FriendlyName() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.list, device.entry, deviceproperty.FriendlyName)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.FriendlyName)
 }
 
 // LocationInformation returns the location information for the device.
 func (device Device) LocationInformation() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.list, device.entry, deviceproperty.LocationInformation)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.LocationInformation)
 }
 
 // PhysicalDeviceObjectName returns the physical object name of the device.
 func (device Device) PhysicalDeviceObjectName() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.list, device.entry, deviceproperty.PhysicalDeviceObjectName)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.PhysicalDeviceObjectName)
 }
 
 // EnumeratorName returns the name of the device's enumerator.
 func (device Device) EnumeratorName() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.list, device.entry, deviceproperty.EnumeratorName)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.EnumeratorName)
 }
 
 // DevType returns the type of the device.
 func (device Device) DevType() (uint32, error) {
-	return setupapi.GetDeviceRegistryUint32(device.list, device.entry, deviceproperty.DevType)
+	return setupapi.GetDeviceRegistryUint32(device.devices, device.data, deviceproperty.DevType)
 }
 
 // Characteristics returns the characteristics of the device.
 func (device Device) Characteristics() (uint32, error) {
-	return setupapi.GetDeviceRegistryUint32(device.list, device.entry, deviceproperty.Characteristics)
+	return setupapi.GetDeviceRegistryUint32(device.devices, device.data, deviceproperty.Characteristics)
 }
 
 // InstallState returns the installation state of the device.
 func (device Device) InstallState() (installstate.State, error) {
-	state, err := setupapi.GetDeviceRegistryUint32(device.list, device.entry, deviceproperty.InstallState)
+	state, err := setupapi.GetDeviceRegistryUint32(device.devices, device.data, deviceproperty.InstallState)
 	return installstate.State(state), err
 }
