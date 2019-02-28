@@ -13,7 +13,7 @@ const (
 	_                        = 6  // SPDRP_UNUSED2
 	Class                    = 7  // SPDRP_CLASS
 	ClassGUID                = 8  // SPDRP_CLASSGUID
-	Driver                   = 9  // SPDRP_DRIVER
+	DriverRegName            = 9  // SPDRP_DRIVER
 	ConfigFlags              = 10 // SPDRP_CONFIGFLAGS
 	Manufacturer             = 11 // SPDRP_MFG
 	FriendlyName             = 12 // SPDRP_FRIENDLYNAME

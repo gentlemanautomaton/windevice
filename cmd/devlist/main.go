@@ -114,9 +114,6 @@ func printDetail(device windevice.Device, index int) {
 	if phys, _ := device.PhysicalDeviceObjectName(); phys != "" {
 		fmt.Printf("      Physical Device Object: %s\n", phys)
 	}
-	if driver, _ := device.Driver(); driver != "" {
-		fmt.Printf("      Driver: %s\n", driver)
-	}
 	if service, _ := device.Service(); service != "" {
 		fmt.Printf("      Service: %s\n", service)
 	}

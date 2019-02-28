@@ -59,9 +59,9 @@ func (device Device) ConfigFlags() (uint32, error) {
 	return setupapi.GetDeviceRegistryUint32(device.devices, device.data, deviceproperty.ConfigFlags)
 }
 
-// Driver returns the driver for the device.
-func (device Device) Driver() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.Driver)
+// DriverRegName returns the registry name of the device's driver.
+func (device Device) DriverRegName() (string, error) {
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.DriverRegName)
 }
 
 // Manufacturer returns the manufacturer of the device.
