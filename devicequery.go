@@ -7,9 +7,9 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-// Query holds device query information. Its zero value is a valid query for
-// all devices.
-type Query struct {
+// DeviceQuery holds device query information. Its zero value is a valid query
+// for all devices.
+type DeviceQuery struct {
 	Class      windows.GUID
 	Enumerator string
 	Flags      uint32
@@ -18,7 +18,7 @@ type Query struct {
 }
 
 // Count returns the number of devices matching the query.
-func (q Query) Count() (int, error) {
+func (q DeviceQuery) Count() (int, error) {
 	var total int
 	err := q.Each(func(Device) {
 		total++
@@ -27,7 +27,7 @@ func (q Query) Count() (int, error) {
 }
 
 // Each performs an action on each device that matches the query.
-func (q Query) Each(action DeviceActor) error {
+func (q DeviceQuery) Each(action DeviceActor) error {
 	var classPtr *windows.GUID
 	if q.Class != zeroGUID {
 		classPtr = &q.Class

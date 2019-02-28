@@ -32,7 +32,7 @@ func main() {
 
 	flag.Parse()
 
-	q := windevice.Query{
+	q := windevice.DeviceQuery{
 		Enumerator: enumerator,
 		Machine:    machine,
 	}
