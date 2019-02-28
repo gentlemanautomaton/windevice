@@ -10,10 +10,12 @@ import (
 )
 
 var (
-	procSetupDiGetClassDevsExW       = modsetupapi.NewProc("SetupDiGetClassDevsExW")
-	procSetupDiCreateDeviceInfoList  = modsetupapi.NewProc("SetupDiCreateDeviceInfoList")
-	procSetupDiDestroyDeviceInfoList = modsetupapi.NewProc("SetupDiDestroyDeviceInfoList")
-	procSetupDiEnumDeviceInfo        = modsetupapi.NewProc("SetupDiEnumDeviceInfo")
+	procSetupDiGetClassDevsExW        = modsetupapi.NewProc("SetupDiGetClassDevsExW")
+	procSetupDiCreateDeviceInfoList   = modsetupapi.NewProc("SetupDiCreateDeviceInfoList")
+	procSetupDiDestroyDeviceInfoList  = modsetupapi.NewProc("SetupDiDestroyDeviceInfoList")
+	procSetupDiEnumDeviceInfo         = modsetupapi.NewProc("SetupDiEnumDeviceInfo")
+	procSetupDiGetDeviceInstallParams = modsetupapi.NewProc("SetupDiGetDeviceInstallParamsW")
+	procSetupDiSetDeviceInstallParams = modsetupapi.NewProc("SetupDiSetDeviceInstallParamsW")
 )
 
 // GetClassDevsEx builds and returns a device information list that contains
@@ -135,4 +137,53 @@ func EnumDeviceInfo(devices syscall.Handle, index uint32) (info DevInfoData, err
 		}
 	}
 	return
+}
+
+// GetDeviceInstallParams returns the installation parameters for a device
+// or device information set. It calls the SetupDiGetDeviceInstallParams
+// windows API function.
+//
+// https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdigetdeviceinstallparamsw
+func GetDeviceInstallParams(devices syscall.Handle, device *DevInfoData) (params DevInstallParams, err error) {
+	params.Size = uint32(unsafe.Sizeof(params))
+
+	r0, _, e := syscall.Syscall(
+		procSetupDiGetDeviceInstallParams.Addr(),
+		3,
+		uintptr(devices),
+		uintptr(unsafe.Pointer(device)),
+		uintptr(unsafe.Pointer(&params)))
+
+	if r0 == 0 {
+		if e != 0 {
+			err = syscall.Errno(e)
+		} else {
+			err = syscall.EINVAL
+		}
+	}
+	return
+}
+
+// SetDeviceInstallParams updates the installation parameters for a device
+// or device information set. It calls the SetupDiSetDeviceInstallParams
+// windows API function.
+//
+// https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdisetdeviceinstallparamsw
+func SetDeviceInstallParams(devices syscall.Handle, device *DevInfoData, params DevInstallParams) error {
+	params.Size = uint32(unsafe.Sizeof(params))
+
+	r0, _, e := syscall.Syscall(
+		procSetupDiSetDeviceInstallParams.Addr(),
+		3,
+		uintptr(devices),
+		uintptr(unsafe.Pointer(device)),
+		uintptr(unsafe.Pointer(&params)))
+
+	if r0 == 0 {
+		if e != 0 {
+			return syscall.Errno(e)
+		}
+		return syscall.EINVAL
+	}
+	return nil
 }
