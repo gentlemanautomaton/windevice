@@ -16,4 +16,8 @@ var (
 
 	// ErrInvalidData is returned when a property isn't present or isn't valid.
 	ErrInvalidData = syscall.Errno(13)
+
+	// ErrNoDriverSelected is returned when a device doesn't have a driver
+	// affiliated with it.
+	//ErrNoDriverSelected = syscall.Errno(3758096899)
 )
