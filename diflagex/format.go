@@ -1,6 +1,6 @@
 package diflagex
 
-// Format maps extended flags to strings.
+// Format maps extended flags to their string representations.
 type Format map[Value]string
 
 // FormatGo maps values to Go-style constant strings.

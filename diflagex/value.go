@@ -2,11 +2,11 @@ package diflagex
 
 import "strings"
 
-// Value describes a set of extended flags for device installation and
+// Value holds a set of extended flags for device installation and
 // enumeration.
 type Value uint32
 
-// Match reports whether v contains all of the extended flags specified by c.
+// Match returns true if v contains all of the extended flags specified by c.
 func (v Value) Match(c Value) bool {
 	return v&c == c
 }
