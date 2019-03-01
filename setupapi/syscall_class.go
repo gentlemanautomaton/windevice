@@ -4,11 +4,14 @@ import (
 	"syscall"
 	"unsafe"
 
+	"github.com/gentlemanautomaton/windevice/difunc"
 	"golang.org/x/sys/windows"
 )
 
 var (
-	procSetupDiClassGuidsFromNameEx = modsetupapi.NewProc("SetupDiClassGuidsFromNameExW")
+	procSetupDiClassGuidsFromNameEx  = modsetupapi.NewProc("SetupDiClassGuidsFromNameExW")
+	procSetupDiSetClassInstallParams = modsetupapi.NewProc("SetupDiSetClassInstallParamsW")
+	procSetupDiCallClassInstaller    = modsetupapi.NewProc("SetupDiCallClassInstaller")
 )
 
 // ClassGuidsFromNameEx returns the list of GUIDs associated with a class
@@ -74,4 +77,60 @@ func classGuidsFromNameEx(className, machine *uint16, buffer []windows.GUID) (re
 		}
 	}
 	return
+}
+
+// SetClassInstallParams updates the class installation parameters for a
+// device or device information set. It calls the SetupDiSetClassInstallParams
+// windows API function.
+//
+// If a header is provided, it must be embedded within a params struct that
+// is appropriate for the device installation function specified in the
+// header.
+//
+// If a non-zero size is provided, it must be the size of the enclosing params
+// struct that contains the header. If a size of 0 is provided the
+// installation parameters of the class will be cleared.
+//
+// https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdisetdeviceinstallparamsw
+func SetClassInstallParams(devices syscall.Handle, device *DevInfoData, header *difunc.ClassInstallHeader, size uint32) error {
+	header.Size = uint32(unsafe.Sizeof(*header))
+
+	r0, _, e := syscall.Syscall6(
+		procSetupDiSetClassInstallParams.Addr(),
+		4,
+		uintptr(devices),
+		uintptr(unsafe.Pointer(device)),
+		uintptr(unsafe.Pointer(header)),
+		uintptr(size),
+		0,
+		0)
+
+	if r0 == 0 {
+		if e != 0 {
+			return syscall.Errno(e)
+		}
+		return syscall.EINVAL
+	}
+	return nil
+}
+
+// CallClassInstaller invokes a class installer function for a device.
+// It calls the SetupDiCallClassInstaller windows API function.
+//
+// https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdicallclassinstaller
+func CallClassInstaller(function difunc.Function, devices syscall.Handle, device *DevInfoData) error {
+	r0, _, e := syscall.Syscall(
+		procSetupDiCallClassInstaller.Addr(),
+		3,
+		uintptr(function),
+		uintptr(devices),
+		uintptr(unsafe.Pointer(device)))
+
+	if r0 == 0 {
+		if e != 0 {
+			return syscall.Errno(e)
+		}
+		return syscall.EINVAL
+	}
+	return nil
 }

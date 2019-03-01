@@ -8,6 +8,7 @@ import (
 	"github.com/gentlemanautomaton/windevice"
 	"github.com/gentlemanautomaton/windevice/deviceclass"
 	"github.com/gentlemanautomaton/windevice/devselect"
+	"github.com/gentlemanautomaton/windevice/difuncremove"
 	"github.com/gentlemanautomaton/windevice/strmatch"
 )
 
@@ -20,6 +21,7 @@ func main() {
 		machine    string
 		present    bool
 		detail     bool
+		remove     bool
 	)
 
 	flag.StringVar(&className, "class", "", "include devices from a named device class")
@@ -29,6 +31,7 @@ func main() {
 	flag.StringVar(&machine, "machine", "", "list devices on a remote machine")
 	flag.BoolVar(&present, "present", false, "include devices that are present")
 	flag.BoolVar(&detail, "detail", false, "print extra detail about each device")
+	flag.BoolVar(&remove, "remove", false, "remove a single matched device")
 
 	flag.Parse()
 
@@ -66,6 +69,20 @@ func main() {
 		q.Selector = devselect.All(selectors...)
 	}
 
+	count, err := q.Count()
+	if err != nil {
+		fmt.Printf("Unable to retrieve device list: %v\n", err)
+		os.Exit(1)
+	}
+	if count == 0 {
+		fmt.Printf("No devices found.\n")
+		return
+	}
+
+	if remove && count > 1 {
+		fmt.Printf("   More than one device matched. Not removing.\n\n")
+	}
+
 	var index int
 	q.Each(func(device windevice.Device) {
 		if detail {
@@ -73,8 +90,30 @@ func main() {
 		} else {
 			printBasic(device, index)
 		}
+		if remove && count == 1 {
+			removeDevice(device)
+		}
 		index++
 	})
+}
+
+func removeDevice(device windevice.Device) {
+	fmt.Printf("      --------\n")
+	fmt.Printf("      Removing device...\n")
+
+	devID, _ := device.DeviceInstanceID()
+
+	needReboot, err := device.Remove(difuncremove.Global, 0)
+	if err != nil {
+		fmt.Printf("      Failed: %v\n", err)
+	} else {
+		fmt.Printf("      Successfully removed %s\n", devID)
+		if needReboot {
+			fmt.Printf("      A reboot is needed to complete the removal process\n")
+		}
+	}
+
+	fmt.Printf("      --------\n")
 }
 
 func printBasic(device windevice.Device, index int) {

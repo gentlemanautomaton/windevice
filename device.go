@@ -2,9 +2,13 @@ package windevice
 
 import (
 	"syscall"
+	"unsafe"
 
 	"github.com/gentlemanautomaton/windevice/deviceproperty"
+	"github.com/gentlemanautomaton/windevice/diflag"
 	"github.com/gentlemanautomaton/windevice/diflagex"
+	"github.com/gentlemanautomaton/windevice/difunc"
+	"github.com/gentlemanautomaton/windevice/difuncremove"
 	"github.com/gentlemanautomaton/windevice/drivertype"
 	"github.com/gentlemanautomaton/windevice/installstate"
 	"github.com/gentlemanautomaton/windevice/setupapi"
@@ -46,6 +50,47 @@ func (device Device) InstalledDriver() DriverSet {
 			FlagsEx: diflagex.InstalledDriver | diflagex.AllowExcludedDrivers,
 		},
 	}
+}
+
+// Remove removes the device.
+//
+// When called with a global scope, all hardware profiles will be affected.
+//
+// When called with a config-specific scope, only the given hardware
+// profile will be affected.
+//
+// A hardware profile of zero indicates the current hardware profile.
+func (device Device) Remove(scope difuncremove.Flags, hardwareProfile uint32) (needReboot bool, err error) {
+	// Prepare the removal function parameters
+	difParams := difuncremove.Params{
+		Header: difunc.ClassInstallHeader{
+			InstallFunction: difunc.Remove,
+		},
+		Scope:             scope,
+		HardwareProfileID: hardwareProfile,
+	}
+
+	// Set parameters for the class installation function call
+	if err := setupapi.SetClassInstallParams(device.devices, &device.data, &difParams.Header, uint32(unsafe.Sizeof(difParams))); err != nil {
+		return false, err
+	}
+
+	// Perform the removal
+	if err := setupapi.CallClassInstaller(difunc.Remove, device.devices, &device.data); err != nil {
+		return false, err
+	}
+
+	// Check to see whether a reboot is needed
+	devParams, err := setupapi.GetDeviceInstallParams(device.devices, &device.data)
+	if err != nil {
+		// The device was removed but we failed to check whether a reboot is
+		// needed
+		return false, nil // Return success anyway because the removal succeeded
+	}
+	if devParams.Flags.Match(diflag.NeedReboot) || devParams.Flags.Match(diflag.NeedRestart) {
+		return true, nil
+	}
+	return false, nil
 }
 
 // DeviceInstanceID returns the device instance ID of the device.
