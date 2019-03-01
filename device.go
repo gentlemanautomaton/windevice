@@ -48,6 +48,11 @@ func (device Device) InstalledDriver() DriverSet {
 	}
 }
 
+// DeviceInstanceID returns the device instance ID of the device.
+func (device Device) DeviceInstanceID() (string, error) {
+	return setupapi.GetDeviceInstanceID(device.devices, device.data)
+}
+
 // Description returns the description of the device.
 func (device Device) Description() (string, error) {
 	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.Description)

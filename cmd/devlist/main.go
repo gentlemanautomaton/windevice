@@ -93,6 +93,9 @@ func printDetail(device windevice.Device, index int) {
 	}
 	fmt.Printf(" %3d: Description: %s\n", index, desc)
 
+	if id, _ := device.DeviceInstanceID(); id != "" {
+		fmt.Printf("      Device Instance ID: %s\n", id)
+	}
 	if name, _ := device.FriendlyName(); name != "" {
 		fmt.Printf("      Friendly Name: %s\n", name)
 	}

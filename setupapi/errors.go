@@ -15,7 +15,10 @@ var (
 	//ErrInvalidRegistry = errors.New("invalid registry type")
 
 	// ErrInvalidData is returned when a property isn't present or isn't valid.
-	ErrInvalidData = syscall.Errno(13)
+	ErrInvalidData = syscall.Errno(13) // ERROR_INVALID_DATA
+
+	// ErrInvalidClass indicates that an invalid class was specified.
+	ErrInvalidClass = syscall.Errno(0xE0000209) // ERROR_INVALID_CLASS
 
 	// ErrNoDriverSelected is returned when a device doesn't have a driver
 	// affiliated with it.

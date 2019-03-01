@@ -16,6 +16,7 @@ var (
 	procSetupDiEnumDeviceInfo         = modsetupapi.NewProc("SetupDiEnumDeviceInfo")
 	procSetupDiGetDeviceInstallParams = modsetupapi.NewProc("SetupDiGetDeviceInstallParamsW")
 	procSetupDiSetDeviceInstallParams = modsetupapi.NewProc("SetupDiSetDeviceInstallParamsW")
+	procSetupDiGetDeviceInstanceId    = modsetupapi.NewProc("SetupDiGetDeviceInstanceIdW")
 )
 
 // GetClassDevsEx builds and returns a device information list that contains
@@ -186,4 +187,34 @@ func SetDeviceInstallParams(devices syscall.Handle, device *DevInfoData, params 
 		return syscall.EINVAL
 	}
 	return nil
+}
+
+// GetDeviceInstanceID returns the device instance ID for a device.
+// It calls the SetupDiGetDeviceInstanceIdW windows API function.
+//
+// https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdigetdeviceinstanceidw
+func GetDeviceInstanceID(devices syscall.Handle, device DevInfoData) (id string, err error) {
+	const maxLength = MaxDeviceIDLength + 1 // Accomodate null terminator
+	var (
+		buffer [maxLength]uint16
+		length uint32
+	)
+
+	r0, _, e := syscall.Syscall6(
+		procSetupDiGetDeviceInstanceId.Addr(),
+		5,
+		uintptr(devices),
+		uintptr(unsafe.Pointer(&device)),
+		uintptr(unsafe.Pointer(&buffer[0])),
+		uintptr(len(buffer)),
+		uintptr(unsafe.Pointer(&length)),
+		0)
+
+	if r0 == 0 {
+		if e != 0 {
+			return "", syscall.Errno(e)
+		}
+		return "", syscall.EINVAL
+	}
+	return syscall.UTF16ToString(buffer[:length]), nil
 }
