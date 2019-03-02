@@ -9,6 +9,7 @@ import (
 
 var (
 	procSetupDiGetDeviceRegistryProperty = modsetupapi.NewProc("SetupDiGetDeviceRegistryPropertyW")
+	procSetupDiSetDeviceRegistryProperty = modsetupapi.NewProc("SetupDiSetDeviceRegistryPropertyW")
 )
 
 // GetDeviceRegistryString retrieves a property from the registry as a string.
@@ -119,4 +120,55 @@ func getDeviceRegistryProperty(devices syscall.Handle, device DevInfoData, prope
 		}
 	}
 	return
+}
+
+// SetDeviceRegistryString sets a device registry property to a string value.
+//
+// The value will be encoded in REG_SZ format.
+func SetDeviceRegistryString(devices syscall.Handle, device DevInfoData, property uint32, value string) (err error) {
+	buffer, err := utf16BytesFromString(value)
+	if err != nil {
+		return err
+	}
+	return SetDeviceRegistryProperty(devices, device, property, buffer)
+}
+
+// SetDeviceRegistryStrings sets a device registry property to a set of
+// string values.
+//
+// The values will be encoded in REG_MULTI_SZ format.
+func SetDeviceRegistryStrings(devices syscall.Handle, device DevInfoData, property uint32, values []string) (err error) {
+	buffer, err := utf16BytesFromStrings(values)
+	if err != nil {
+		return err
+	}
+	return SetDeviceRegistryProperty(devices, device, property, buffer)
+}
+
+// SetDeviceRegistryProperty sets a device registry property.
+// It calls the SetupDiSetDeviceRegistryProperty windows API function.
+//
+// https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdisetdeviceregistrypropertyw
+func SetDeviceRegistryProperty(devices syscall.Handle, device DevInfoData, property uint32, buffer []byte) (err error) {
+	var pb *byte
+	if len(buffer) > 0 {
+		pb = &buffer[0]
+	}
+	r0, _, e := syscall.Syscall6(
+		procSetupDiSetDeviceRegistryProperty.Addr(),
+		5,
+		uintptr(devices),
+		uintptr(unsafe.Pointer(&device)),
+		uintptr(property),
+		uintptr(unsafe.Pointer(pb)),
+		uintptr(len(buffer)),
+		0)
+
+	if r0 == 0 {
+		if e != 0 {
+			return syscall.Errno(e)
+		}
+		return syscall.EINVAL
+	}
+	return nil
 }
