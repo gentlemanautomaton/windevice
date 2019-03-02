@@ -24,7 +24,7 @@ var (
 // windows API function.
 //
 // https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdigetclassdevsexw
-func GetClassDevsEx(guid *windows.GUID, enumerator string, flags uint32, hDevInfoSet syscall.Handle, machineName string) (handle syscall.Handle, err error) {
+func GetClassDevsEx(guid *windows.GUID, enumerator string, flags uint32, devices syscall.Handle, machineName string) (handle syscall.Handle, err error) {
 	var ep *uint16
 	if enumerator != "" {
 		ep, err = syscall.UTF16PtrFromString(enumerator)
@@ -52,7 +52,7 @@ func GetClassDevsEx(guid *windows.GUID, enumerator string, flags uint32, hDevInf
 		uintptr(unsafe.Pointer(ep)),
 		0, // hwndParent
 		uintptr(flags),
-		uintptr(hDevInfoSet),
+		uintptr(devices),
 		uintptr(unsafe.Pointer(mnp)),
 		0,
 		0,
