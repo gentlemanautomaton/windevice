@@ -6,6 +6,7 @@ import (
 	"unsafe"
 
 	"github.com/gentlemanautomaton/windevice/deviceclass"
+	"github.com/gentlemanautomaton/windevice/devicecreation"
 	"golang.org/x/sys/windows"
 )
 
@@ -17,6 +18,7 @@ var (
 	procSetupDiGetDeviceInstallParams = modsetupapi.NewProc("SetupDiGetDeviceInstallParamsW")
 	procSetupDiSetDeviceInstallParams = modsetupapi.NewProc("SetupDiSetDeviceInstallParamsW")
 	procSetupDiGetDeviceInstanceID    = modsetupapi.NewProc("SetupDiGetDeviceInstanceIdW")
+	procSetupDiCreateDeviceInfo       = modsetupapi.NewProc("SetupDiCreateDeviceInfoW")
 )
 
 // GetClassDevsEx builds and returns a device information list that contains
@@ -135,6 +137,50 @@ func EnumDeviceInfo(devices syscall.Handle, index uint32) (info DevInfoData, err
 			err = io.EOF
 		default:
 			err = syscall.Errno(e)
+		}
+	}
+	return
+}
+
+// CreateDeviceInfo creates a new device and adds it to the device
+// information set. It calls the SetupDiCreateDeviceInfoW windows
+// API function.
+//
+// https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdicreatedeviceinfow
+func CreateDeviceInfo(devices syscall.Handle, name string, class windows.GUID, description string, flags devicecreation.Flags) (device DevInfoData, err error) {
+	utf16Name, err := syscall.UTF16PtrFromString(name)
+	if err != nil {
+		return DevInfoData{}, err
+	}
+
+	var utf16Description *uint16
+	if description != "" {
+		utf16Description, err = syscall.UTF16PtrFromString(description)
+		if err != nil {
+			return DevInfoData{}, err
+		}
+	}
+
+	device.Size = uint32(unsafe.Sizeof(device))
+
+	r0, _, e := syscall.Syscall9(
+		procSetupDiCreateDeviceInfo.Addr(),
+		7,
+		uintptr(devices),
+		uintptr(unsafe.Pointer(utf16Name)),
+		uintptr(unsafe.Pointer(&class)),
+		uintptr(unsafe.Pointer(utf16Description)),
+		0,
+		uintptr(flags),
+		uintptr(unsafe.Pointer(&device)),
+		0,
+		0)
+
+	if r0 == 0 {
+		if e != 0 {
+			err = syscall.Errno(e)
+		} else {
+			err = syscall.EINVAL
 		}
 	}
 	return
