@@ -33,7 +33,10 @@ func utf16BytesFromStrings(s []string) ([]byte, error) {
 
 	// Terminate with an empty line
 	{
-		line := []uint16{0}
+		line, err := syscall.UTF16FromString("")
+		if err != nil {
+			return nil, err
+		}
 		lines = append(lines, line)
 		length += len(line)
 	}
