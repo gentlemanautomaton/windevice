@@ -110,7 +110,7 @@ func (device Device) HardwareID() ([]deviceid.Hardware, error) {
 	if err != nil {
 		return nil, err
 	}
-	hids := make([]deviceid.Hardware, len(ids))
+	hids := make([]deviceid.Hardware, 0, len(ids))
 	for _, id := range ids {
 		hids = append(hids, deviceid.Hardware(id))
 	}
@@ -123,7 +123,7 @@ func (device Device) CompatibleID() ([]deviceid.Compatible, error) {
 	if err != nil {
 		return nil, err
 	}
-	cids := make([]deviceid.Compatible, len(ids))
+	cids := make([]deviceid.Compatible, 0, len(ids))
 	for _, id := range ids {
 		cids = append(cids, deviceid.Compatible(id))
 	}
