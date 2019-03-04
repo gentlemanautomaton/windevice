@@ -7,6 +7,7 @@ import (
 
 	"github.com/gentlemanautomaton/windevice/deviceclass"
 	"github.com/gentlemanautomaton/windevice/devicecreation"
+	"github.com/gentlemanautomaton/windevice/deviceid"
 	"golang.org/x/sys/windows"
 )
 
@@ -191,7 +192,7 @@ func CreateDeviceInfo(devices syscall.Handle, name string, class windows.GUID, d
 //
 // https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdigetdeviceinstanceidw
 func GetDeviceInstanceID(devices syscall.Handle, device DevInfoData) (id string, err error) {
-	const maxLength = MaxDeviceIDLength + 1 // Accomodate null terminator
+	const maxLength = deviceid.MaxLength + 1 // Accomodate null terminator
 	var (
 		buffer [maxLength]uint16
 		length uint32

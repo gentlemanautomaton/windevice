@@ -10,7 +10,7 @@ func ID(matcher StringMatcher) Selector {
 			return false, err
 		}
 		for _, id := range ids {
-			if matcher.Match(id) {
+			if matcher.Match(string(id)) {
 				return true, nil
 			}
 		}

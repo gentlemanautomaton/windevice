@@ -4,6 +4,7 @@ import (
 	"syscall"
 	"unsafe"
 
+	"github.com/gentlemanautomaton/windevice/deviceid"
 	"github.com/gentlemanautomaton/windevice/deviceproperty"
 	"github.com/gentlemanautomaton/windevice/diflag"
 	"github.com/gentlemanautomaton/windevice/diflagex"
@@ -94,8 +95,12 @@ func (device Device) Remove(scope difuncremove.Flags, hardwareProfile uint32) (n
 }
 
 // DeviceInstanceID returns the device instance ID of the device.
-func (device Device) DeviceInstanceID() (string, error) {
-	return setupapi.GetDeviceInstanceID(device.devices, device.data)
+func (device Device) DeviceInstanceID() (deviceid.DeviceInstance, error) {
+	id, err := setupapi.GetDeviceInstanceID(device.devices, device.data)
+	if err != nil {
+		return "", err
+	}
+	return deviceid.DeviceInstance(id), nil
 }
 
 // Description returns the description of the device.
@@ -104,13 +109,29 @@ func (device Device) Description() (string, error) {
 }
 
 // HardwareID returns the set of hardware IDs associated with the device.
-func (device Device) HardwareID() ([]string, error) {
-	return setupapi.GetDeviceRegistryStrings(device.devices, device.data, deviceproperty.HardwareID)
+func (device Device) HardwareID() ([]deviceid.Hardware, error) {
+	ids, err := setupapi.GetDeviceRegistryStrings(device.devices, device.data, deviceproperty.HardwareID)
+	if err != nil {
+		return nil, err
+	}
+	hids := make([]deviceid.Hardware, len(ids))
+	for _, id := range ids {
+		hids = append(hids, deviceid.Hardware(id))
+	}
+	return hids, nil
 }
 
 // CompatibleID returns the set of compatible IDs associated with the device.
-func (device Device) CompatibleID() ([]string, error) {
-	return setupapi.GetDeviceRegistryStrings(device.devices, device.data, deviceproperty.CompatibleID)
+func (device Device) CompatibleID() ([]deviceid.Compatible, error) {
+	ids, err := setupapi.GetDeviceRegistryStrings(device.devices, device.data, deviceproperty.CompatibleID)
+	if err != nil {
+		return nil, err
+	}
+	cids := make([]deviceid.Compatible, len(ids))
+	for _, id := range ids {
+		cids = append(cids, deviceid.Compatible(id))
+	}
+	return cids, nil
 }
 
 // Service returns the service for the device.
