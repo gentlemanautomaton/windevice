@@ -44,6 +44,6 @@ const (
 	PowerMessageWake              = 0x00000027 // DIF_POWERMESSAGEWAKE
 	AddRemotePropertyPageAdvanced = 0x00000028 // DIF_ADDREMOTEPROPERTYPAGE_ADVANCED
 	UpdateDriverUI                = 0x00000029 // DIF_UPDATEDRIVER_UI
-	FInishInstallAction           = 0x0000002A // DIF_FINISHINSTALL_ACTION
+	FinishInstallAction           = 0x0000002A // DIF_FINISHINSTALL_ACTION
 	Reserved2                     = 0x00000030 // DIF_RESERVED2
 )
