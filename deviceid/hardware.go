@@ -11,8 +11,8 @@ import (
 // https://docs.microsoft.com/en-us/windows-hardware/drivers/install/hardware-ids
 type Hardware string
 
-// Valid returns an error if the hardware ID is not valid.
-func (id Hardware) Valid() error {
+// Validate returns an error if the hardware ID is not valid.
+func (id Hardware) Validate() error {
 	if id == "" {
 		return errors.New("an empty hardware identifier was provided")
 	}

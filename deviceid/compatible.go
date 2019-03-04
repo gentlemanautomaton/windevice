@@ -12,8 +12,8 @@ import (
 // https://docs.microsoft.com/en-us/windows-hardware/drivers/install/compatible-ids
 type Compatible string
 
-// Valid returns an error if the compatible ID is not valid.
-func (id Compatible) Valid() error {
+// Validate returns an error if the compatible ID is not valid.
+func (id Compatible) Validate() error {
 	if id == "" {
 		return errors.New("an empty compatibility identifier was provided")
 	}

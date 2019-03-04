@@ -11,8 +11,8 @@ import (
 // https://docs.microsoft.com/en-us/windows-hardware/drivers/install/instance-ids
 type Instance string
 
-// Valid returns an error if the instance ID is not valid.
-func (id Instance) Valid() error {
+// Validate returns an error if the instance ID is not valid.
+func (id Instance) Validate() error {
 	if id == "" {
 		return errors.New("an empty instance identifier was provided")
 	}

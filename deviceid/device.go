@@ -11,8 +11,8 @@ import (
 // https://docs.microsoft.com/en-us/windows-hardware/drivers/install/device-ids
 type Device string
 
-// Valid returns an error if the device ID is not valid.
-func (id Device) Valid() error {
+// Validate returns an error if the device ID is not valid.
+func (id Device) Validate() error {
 	if id == "" {
 		return errors.New("an empty device identifier was provided")
 	}
