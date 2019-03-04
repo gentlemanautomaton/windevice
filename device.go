@@ -96,11 +96,7 @@ func (device Device) Remove(scope difuncremove.Flags, hardwareProfile uint32) (n
 
 // DeviceInstanceID returns the device instance ID of the device.
 func (device Device) DeviceInstanceID() (deviceid.DeviceInstance, error) {
-	id, err := setupapi.GetDeviceInstanceID(device.devices, device.data)
-	if err != nil {
-		return "", err
-	}
-	return deviceid.DeviceInstance(id), nil
+	return setupapi.GetDeviceInstanceID(device.devices, device.data)
 }
 
 // Description returns the description of the device.

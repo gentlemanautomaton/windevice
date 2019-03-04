@@ -191,7 +191,7 @@ func CreateDeviceInfo(devices syscall.Handle, name string, class windows.GUID, d
 // It calls the SetupDiGetDeviceInstanceIdW windows API function.
 //
 // https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdigetdeviceinstanceidw
-func GetDeviceInstanceID(devices syscall.Handle, device DevInfoData) (id string, err error) {
+func GetDeviceInstanceID(devices syscall.Handle, device DevInfoData) (id deviceid.DeviceInstance, err error) {
 	const maxLength = deviceid.MaxLength + 1 // Accomodate null terminator
 	var (
 		buffer [maxLength]uint16
@@ -214,7 +214,7 @@ func GetDeviceInstanceID(devices syscall.Handle, device DevInfoData) (id string,
 		}
 		return "", syscall.EINVAL
 	}
-	return syscall.UTF16ToString(buffer[:length]), nil
+	return deviceid.DeviceInstance(syscall.UTF16ToString(buffer[:length])), nil
 }
 
 // GetDeviceInstallParams returns the installation parameters for a device
