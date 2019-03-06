@@ -1,6 +1,6 @@
-package deviceproperty
+package deviceregistryproperty
 
-// Windows device property codes.
+// Windows device registry property codes.
 //
 // https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdigetdeviceregistrypropertyw
 const (

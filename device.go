@@ -5,7 +5,7 @@ import (
 	"unsafe"
 
 	"github.com/gentlemanautomaton/windevice/deviceid"
-	"github.com/gentlemanautomaton/windevice/deviceproperty"
+	"github.com/gentlemanautomaton/windevice/deviceregistryproperty"
 	"github.com/gentlemanautomaton/windevice/diflag"
 	"github.com/gentlemanautomaton/windevice/diflagex"
 	"github.com/gentlemanautomaton/windevice/difunc"
@@ -101,12 +101,12 @@ func (device Device) DeviceInstanceID() (deviceid.DeviceInstance, error) {
 
 // Description returns the description of the device.
 func (device Device) Description() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.Description)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceregistryproperty.Description)
 }
 
 // HardwareID returns the set of hardware IDs associated with the device.
 func (device Device) HardwareID() ([]deviceid.Hardware, error) {
-	ids, err := setupapi.GetDeviceRegistryStrings(device.devices, device.data, deviceproperty.HardwareID)
+	ids, err := setupapi.GetDeviceRegistryStrings(device.devices, device.data, deviceregistryproperty.HardwareID)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func (device Device) HardwareID() ([]deviceid.Hardware, error) {
 
 // CompatibleID returns the set of compatible IDs associated with the device.
 func (device Device) CompatibleID() ([]deviceid.Compatible, error) {
-	ids, err := setupapi.GetDeviceRegistryStrings(device.devices, device.data, deviceproperty.CompatibleID)
+	ids, err := setupapi.GetDeviceRegistryStrings(device.devices, device.data, deviceregistryproperty.CompatibleID)
 	if err != nil {
 		return nil, err
 	}
@@ -132,67 +132,67 @@ func (device Device) CompatibleID() ([]deviceid.Compatible, error) {
 
 // Service returns the service for the device.
 func (device Device) Service() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.Service)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceregistryproperty.Service)
 }
 
 // Class returns the class name of the device.
 func (device Device) Class() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.Class)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceregistryproperty.Class)
 }
 
 // ClassGUID returns a string representation of the globally unique identifier
 // of the device's class.
 func (device Device) ClassGUID() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.ClassGUID)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceregistryproperty.ClassGUID)
 }
 
 // ConfigFlags returns the configuration flags for the device.
 func (device Device) ConfigFlags() (uint32, error) {
-	return setupapi.GetDeviceRegistryUint32(device.devices, device.data, deviceproperty.ConfigFlags)
+	return setupapi.GetDeviceRegistryUint32(device.devices, device.data, deviceregistryproperty.ConfigFlags)
 }
 
 // DriverRegName returns the registry name of the device's driver.
 func (device Device) DriverRegName() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.DriverRegName)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceregistryproperty.DriverRegName)
 }
 
 // Manufacturer returns the manufacturer of the device.
 func (device Device) Manufacturer() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.Manufacturer)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceregistryproperty.Manufacturer)
 }
 
 // FriendlyName returns the friendly name of the device.
 func (device Device) FriendlyName() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.FriendlyName)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceregistryproperty.FriendlyName)
 }
 
 // LocationInformation returns the location information for the device.
 func (device Device) LocationInformation() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.LocationInformation)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceregistryproperty.LocationInformation)
 }
 
 // PhysicalDeviceObjectName returns the physical object name of the device.
 func (device Device) PhysicalDeviceObjectName() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.PhysicalDeviceObjectName)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceregistryproperty.PhysicalDeviceObjectName)
 }
 
 // EnumeratorName returns the name of the device's enumerator.
 func (device Device) EnumeratorName() (string, error) {
-	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceproperty.EnumeratorName)
+	return setupapi.GetDeviceRegistryString(device.devices, device.data, deviceregistryproperty.EnumeratorName)
 }
 
 // DevType returns the type of the device.
 func (device Device) DevType() (uint32, error) {
-	return setupapi.GetDeviceRegistryUint32(device.devices, device.data, deviceproperty.DevType)
+	return setupapi.GetDeviceRegistryUint32(device.devices, device.data, deviceregistryproperty.DevType)
 }
 
 // Characteristics returns the characteristics of the device.
 func (device Device) Characteristics() (uint32, error) {
-	return setupapi.GetDeviceRegistryUint32(device.devices, device.data, deviceproperty.Characteristics)
+	return setupapi.GetDeviceRegistryUint32(device.devices, device.data, deviceregistryproperty.Characteristics)
 }
 
 // InstallState returns the installation state of the device.
 func (device Device) InstallState() (installstate.State, error) {
-	state, err := setupapi.GetDeviceRegistryUint32(device.devices, device.data, deviceproperty.InstallState)
+	state, err := setupapi.GetDeviceRegistryUint32(device.devices, device.data, deviceregistryproperty.InstallState)
 	return installstate.State(state), err
 }

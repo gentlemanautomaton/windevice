@@ -5,7 +5,7 @@ import (
 
 	"github.com/gentlemanautomaton/windevice/devicecreation"
 	"github.com/gentlemanautomaton/windevice/deviceid"
-	"github.com/gentlemanautomaton/windevice/deviceproperty"
+	"github.com/gentlemanautomaton/windevice/deviceregistryproperty"
 	"github.com/gentlemanautomaton/windevice/difunc"
 	"github.com/gentlemanautomaton/windevice/infpath"
 	"github.com/gentlemanautomaton/windevice/installflag"
@@ -47,7 +47,7 @@ func Install(id deviceid.Hardware, path, description string, flags installflag.V
 	}
 
 	// Set the hardware ID
-	if err := setupapi.SetDeviceRegistryStrings(devices, device, deviceproperty.HardwareID, []string{string(id)}); err != nil {
+	if err := setupapi.SetDeviceRegistryStrings(devices, device, deviceregistryproperty.HardwareID, []string{string(id)}); err != nil {
 		return "", false, fmt.Errorf("failed to set hardware ID: %v", err)
 	}
 
