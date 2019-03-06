@@ -98,8 +98,6 @@ func getDeviceRegistryProperty(devices syscall.Handle, device DevInfoData, prope
 		return 0, 0, ErrEmptyBuffer
 	}
 
-	device.Size = uint32(unsafe.Sizeof(device))
-
 	r0, _, e := syscall.Syscall9(
 		procSetupDiGetDeviceRegistryProperty.Addr(),
 		7,
