@@ -1,4 +1,4 @@
-package deviceregistryproperty
+package deviceregistry
 
 // Windows device registry property codes.
 //
@@ -41,3 +41,6 @@ const (
 	InstallState             = 34 // SPDRP_INSTALL_STATE
 	LocationPaths            = 35 // SPDRP_LOCATION_PATHS
 )
+
+// Code identifies a device registry property.
+type Code uint32

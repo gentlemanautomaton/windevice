@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"syscall"
 	"unsafe"
+
+	"github.com/gentlemanautomaton/windevice/deviceregistry"
 )
 
 var (
@@ -13,7 +15,7 @@ var (
 )
 
 // GetDeviceRegistryString retrieves a property from the registry as a string.
-func GetDeviceRegistryString(devices syscall.Handle, device DevInfoData, property uint32) (value string, err error) {
+func GetDeviceRegistryString(devices syscall.Handle, device DevInfoData, property deviceregistry.Code) (value string, err error) {
 	var buffer [1024 * 2]byte
 	dataType, data, err := GetDeviceRegistryProperty(devices, device, property, buffer[:])
 	if err != nil {
@@ -30,7 +32,7 @@ func GetDeviceRegistryString(devices syscall.Handle, device DevInfoData, propert
 
 // GetDeviceRegistryStrings retrieves a property from the registry as a
 // slice of strings.
-func GetDeviceRegistryStrings(devices syscall.Handle, device DevInfoData, property uint32) (values []string, err error) {
+func GetDeviceRegistryStrings(devices syscall.Handle, device DevInfoData, property deviceregistry.Code) (values []string, err error) {
 	var buffer [1024 * 2]byte
 	dataType, data, err := GetDeviceRegistryProperty(devices, device, property, buffer[:])
 	if err != nil {
@@ -48,7 +50,7 @@ func GetDeviceRegistryStrings(devices syscall.Handle, device DevInfoData, proper
 }
 
 // GetDeviceRegistryUint32 retrieves a property from the registry as a uint32.
-func GetDeviceRegistryUint32(devices syscall.Handle, device DevInfoData, property uint32) (value uint32, err error) {
+func GetDeviceRegistryUint32(devices syscall.Handle, device DevInfoData, property deviceregistry.Code) (value uint32, err error) {
 	var buffer [4]byte
 	dataType, data, err := GetDeviceRegistryProperty(devices, device, property, buffer[:])
 	if err != nil {
@@ -74,7 +76,7 @@ func GetDeviceRegistryUint32(devices syscall.Handle, device DevInfoData, propert
 // API function.
 //
 // https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdigetdeviceregistrypropertyw
-func GetDeviceRegistryProperty(devices syscall.Handle, device DevInfoData, property uint32, buffer []byte) (dataType uint32, data []byte, err error) {
+func GetDeviceRegistryProperty(devices syscall.Handle, device DevInfoData, property deviceregistry.Code, buffer []byte) (dataType uint32, data []byte, err error) {
 	// Make up to 3 attempts to get the property data.
 	const rounds = 3
 	for i := 0; i < rounds; i++ {
@@ -93,7 +95,7 @@ func GetDeviceRegistryProperty(devices syscall.Handle, device DevInfoData, prope
 	return dataType, data, err
 }
 
-func getDeviceRegistryProperty(devices syscall.Handle, device DevInfoData, property uint32, buffer []byte) (reqSize uint32, registryDataType uint32, err error) {
+func getDeviceRegistryProperty(devices syscall.Handle, device DevInfoData, property deviceregistry.Code, buffer []byte) (reqSize uint32, registryDataType uint32, err error) {
 	if len(buffer) == 0 {
 		return 0, 0, ErrEmptyBuffer
 	}
@@ -123,7 +125,7 @@ func getDeviceRegistryProperty(devices syscall.Handle, device DevInfoData, prope
 // SetDeviceRegistryString sets a device registry property to a string value.
 //
 // The value will be encoded in REG_SZ format.
-func SetDeviceRegistryString(devices syscall.Handle, device DevInfoData, property uint32, value string) (err error) {
+func SetDeviceRegistryString(devices syscall.Handle, device DevInfoData, property deviceregistry.Code, value string) (err error) {
 	buffer, err := utf16BytesFromString(value)
 	if err != nil {
 		return err
@@ -135,7 +137,7 @@ func SetDeviceRegistryString(devices syscall.Handle, device DevInfoData, propert
 // string values.
 //
 // The values will be encoded in REG_MULTI_SZ format.
-func SetDeviceRegistryStrings(devices syscall.Handle, device DevInfoData, property uint32, values []string) (err error) {
+func SetDeviceRegistryStrings(devices syscall.Handle, device DevInfoData, property deviceregistry.Code, values []string) (err error) {
 	buffer, err := utf16BytesFromStrings(values)
 	if err != nil {
 		return err
@@ -147,7 +149,7 @@ func SetDeviceRegistryStrings(devices syscall.Handle, device DevInfoData, proper
 // It calls the SetupDiSetDeviceRegistryProperty windows API function.
 //
 // https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/nf-setupapi-setupdisetdeviceregistrypropertyw
-func SetDeviceRegistryProperty(devices syscall.Handle, device DevInfoData, property uint32, buffer []byte) (err error) {
+func SetDeviceRegistryProperty(devices syscall.Handle, device DevInfoData, property deviceregistry.Code, buffer []byte) (err error) {
 	var pb *byte
 	if len(buffer) > 0 {
 		pb = &buffer[0]
