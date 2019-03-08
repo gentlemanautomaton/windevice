@@ -1,10 +1,12 @@
 package windevice
 
 import (
+	"fmt"
 	"syscall"
 	"unsafe"
 
 	"github.com/gentlemanautomaton/windevice/deviceid"
+	"github.com/gentlemanautomaton/windevice/deviceproperty"
 	"github.com/gentlemanautomaton/windevice/deviceregistry"
 	"github.com/gentlemanautomaton/windevice/diflag"
 	"github.com/gentlemanautomaton/windevice/diflagex"
@@ -98,6 +100,28 @@ func (device Device) Remove(scope hwprofile.Scope, profile hwprofile.ID) (needRe
 // DeviceInstanceID returns the device instance ID of the device.
 func (device Device) DeviceInstanceID() (deviceid.DeviceInstance, error) {
 	return setupapi.GetDeviceInstanceID(device.devices, device.data)
+}
+
+// Properties returns all of the properties of the device instance.
+func (device Device) Properties() ([]deviceproperty.Property, error) {
+	keys, err := setupapi.GetDevicePropertyKeys(device.devices, device.data)
+	if err != nil {
+		return nil, err
+	}
+
+	props := make([]deviceproperty.Property, 0, len(keys))
+	for i, key := range keys {
+		value, err := setupapi.GetDeviceProperty(device.devices, device.data, key)
+		if err != nil {
+			return nil, fmt.Errorf("failed to retrieve device property %d: %v", i, err)
+		}
+		props = append(props, deviceproperty.Property{
+			Key:   key,
+			Value: value,
+		})
+	}
+
+	return props, nil
 }
 
 // Description returns the description of the device.

@@ -21,6 +21,7 @@ func main() {
 		machine    string
 		present    bool
 		detail     bool
+		props      bool
 		remove     bool
 	)
 
@@ -31,6 +32,7 @@ func main() {
 	flag.StringVar(&machine, "machine", "", "list devices on a remote machine")
 	flag.BoolVar(&present, "present", false, "include devices that are present")
 	flag.BoolVar(&detail, "detail", false, "print extra detail about each device")
+	flag.BoolVar(&props, "props", false, "show all device properties")
 	flag.BoolVar(&remove, "remove", false, "remove a single matched device")
 
 	flag.Parse()
@@ -86,7 +88,7 @@ func main() {
 	var index int
 	q.Each(func(device windevice.Device) {
 		if detail {
-			printDetail(device, index)
+			printDetail(device, index, props)
 		} else {
 			printBasic(device, index)
 		}
@@ -124,7 +126,7 @@ func printBasic(device windevice.Device, index int) {
 	}
 }
 
-func printDetail(device windevice.Device, index int) {
+func printDetail(device windevice.Device, index int, allProps bool) {
 	desc, err := device.Description()
 	if err != nil {
 		fmt.Printf(" %3d: Error: %v\n", index, err)
@@ -208,5 +210,12 @@ func printDetail(device windevice.Device, index int) {
 	}
 	if state, err := device.InstallState(); err == nil {
 		fmt.Printf("      State: %s\n", state)
+	}
+	if allProps {
+		if props, err := device.Properties(); err == nil {
+			for _, prop := range props {
+				fmt.Printf("      %s: %s\n", prop.Key, prop.Value)
+			}
+		}
 	}
 }
