@@ -1,6 +1,6 @@
 package hwprofile
 
-// Windows hardware profile flags.
+// Windows hardware profile scope flags.
 //
 // https://docs.microsoft.com/en-us/windows/desktop/api/setupapi/ns-setupapi-_sp_removedevice_params
 const (

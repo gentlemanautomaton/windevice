@@ -2,7 +2,7 @@ package hwprofile
 
 import "strings"
 
-// Scope hold a set of hardware profile flags.
+// Scope hold a set of hardware profile scope flags.
 type Scope uint32
 
 // Match returns true if v contains all of the flags specified by c.
@@ -10,8 +10,8 @@ func (v Scope) Match(c Scope) bool {
 	return v&c == c
 }
 
-// String returns a string representation of the extended flags using a
-// default separator and format.
+// String returns a string representation of the flags using a default
+// separator and format.
 func (v Scope) String() string {
 	return v.Join("|", FormatGo)
 }
