@@ -8,7 +8,7 @@ import (
 	"github.com/gentlemanautomaton/windevice"
 	"github.com/gentlemanautomaton/windevice/deviceclass"
 	"github.com/gentlemanautomaton/windevice/devselect"
-	"github.com/gentlemanautomaton/windevice/difuncremove"
+	"github.com/gentlemanautomaton/windevice/hwprofile"
 	"github.com/gentlemanautomaton/windevice/strmatch"
 )
 
@@ -103,7 +103,7 @@ func removeDevice(device windevice.Device) {
 
 	devID, _ := device.DeviceInstanceID()
 
-	needReboot, err := device.Remove(difuncremove.Global, 0)
+	needReboot, err := device.Remove(hwprofile.Global, 0)
 	if err != nil {
 		fmt.Printf("      Failed: %v\n", err)
 	} else {

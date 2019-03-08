@@ -11,6 +11,7 @@ import (
 	"github.com/gentlemanautomaton/windevice/difunc"
 	"github.com/gentlemanautomaton/windevice/difuncremove"
 	"github.com/gentlemanautomaton/windevice/drivertype"
+	"github.com/gentlemanautomaton/windevice/hwprofile"
 	"github.com/gentlemanautomaton/windevice/installstate"
 	"github.com/gentlemanautomaton/windevice/setupapi"
 )
@@ -61,14 +62,14 @@ func (device Device) InstalledDriver() DriverSet {
 // profile will be affected.
 //
 // A hardware profile of zero indicates the current hardware profile.
-func (device Device) Remove(scope difuncremove.Flags, hardwareProfile uint32) (needReboot bool, err error) {
+func (device Device) Remove(scope hwprofile.Scope, profile hwprofile.ID) (needReboot bool, err error) {
 	// Prepare the removal function parameters
 	difParams := difuncremove.Params{
 		Header: difunc.ClassInstallHeader{
 			InstallFunction: difunc.Remove,
 		},
-		Scope:             scope,
-		HardwareProfileID: hardwareProfile,
+		Scope:   scope,
+		Profile: profile,
 	}
 
 	// Set parameters for the class installation function call
