@@ -221,3 +221,15 @@ func (device Device) InstallState() (installstate.State, error) {
 	state, err := setupapi.GetDeviceRegistryUint32(device.devices, device.data, deviceregistry.InstallState)
 	return installstate.State(state), err
 }
+
+// NetCfgInstance returns the NetCfgInstance of the device.
+func (device Device) NetCfgInstance() (id string, err error) {
+	key, err := setupapi.OpenDevRegKey(device.devices, device.data, hwprofile.Global, 0, deviceregistry.Driver, deviceregistry.Read)
+	if err != nil {
+		return "", err
+	}
+	defer key.Close()
+
+	id, _, err = key.GetStringValue("NetCfgInstanceId")
+	return
+}

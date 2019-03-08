@@ -211,6 +211,9 @@ func printDetail(device windevice.Device, index int, allProps bool) {
 	if state, err := device.InstallState(); err == nil {
 		fmt.Printf("      State: %s\n", state)
 	}
+	if instance, err := device.NetCfgInstance(); err == nil {
+		fmt.Printf("      Network Configuration Instance: %s\n", instance)
+	}
 	if allProps {
 		if props, err := device.Properties(); err == nil {
 			for _, prop := range props {
