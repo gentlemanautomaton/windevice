@@ -1,4 +1,5 @@
-windevice [![GoDoc](https://godoc.org/github.com/gentlemanautomaton/windevice?status.svg)](https://godoc.org/github.com/gentlemanautomaton/windevice)
+windevice
+[![Go Reference](https://pkg.go.dev/badge/github.com/gentlemanautomaton/windevice.svg)](https://pkg.go.dev/github.com/gentlemanautomaton/windevice)
 ====
 
 The windevice package provides access to windows device management APIs.
